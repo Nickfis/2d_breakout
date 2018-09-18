@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<canvas id="myCanvas" width="720" height="480"></canvas>
+<canvas id="myCanvas" width="480" height="320"></canvas>
 
 <script>
   // storing the reference of the canvas element to a variable
@@ -34,6 +34,24 @@
   // variables for registering button touches
   var rightPressed = false;
   var leftPressed = false;
+
+  // defining variables for creation of (to be destroyed) bricks
+  var brickRowCount = 3; // 3 rows of bricks
+  var brickColumnCount = 5; // 5 columns, overall 15 bricks to destroy
+  var brickWidth = 75; // each brick will be 75pixels wide and 20px high
+  var brickHeight = 20;
+  var brickPadding = 10; // padding in between the blocks of bricks
+  var brickOffsetTop = 30; // offset so they don't start with the edges
+  var brickOffsetLeft = 30;
+
+  // loop for creating the bricks according to the Row and Column count
+  var bricks = [];
+  for(var c=0; c<brickColumnCount; c++) {
+    bricks[c] = [];
+    for(var r=0; r<brickRowCount; r++) {
+      bricks[c][r] = {x: 0, y: 0 };
+    }
+  }
 
   // adding event listeners for button touches
   document.addEventListener("keydown", keyDownHandler, false);
@@ -74,6 +92,24 @@
     ctx.closePath();
   }
 
+  // function for drawing the created bricks
+  function drawBricks() {
+    for(var c=0; c<brickColumnCount; c++) {
+      for(var r=0; r<brickRowCount; r++) {
+        // get X and Y position for brick to be drawn
+        var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+        var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+        bricks[c][r].x = 0;
+        bricks[c][r].y = 0;
+        ctx.beginPath();
+        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+    }
+  }
+
 
   function draw() {
     // clearing canvas before drawing on it
@@ -81,6 +117,7 @@
     // calling the drawBall function inside the drawing function
     drawBall();
     drawPaddle();
+    drawBricks();
     // updating the position each time the ball is drawn
     if(y+dy < ballRadius){
       dy = -dy;
