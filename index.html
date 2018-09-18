@@ -26,6 +26,38 @@
   // defining the size of the ball
   ballRadius = 10;
 
+  // paddle creation
+  var paddleHeight = 10;
+  var paddleWidth = 75;
+  var paddleX = (canvas.width-paddleWidth)/2;
+
+  // variables for registering button touches
+  var rightPressed = false;
+  var leftPressed = false;
+
+  // adding event listeners for button touches
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+
+  // creating functions for handling button presses
+  function keyDownHandler(event) {
+    if(event.keyCode == 39) { // keyCode 39 is the right cursor on the keyboard
+      rightPressed = true;
+    }
+    else if(event.keyCode == 37) { // keyCode 37 is the left cursor on the keyboard
+      leftPressed = true;
+    }
+  }
+
+  function keyUpHandler(event) {
+    if(event.keyCode == 39) {
+      rightPressed = false;
+    }
+    else if(event.keyCode == 37) {
+      leftPressed = false;
+    }
+  }
+
   function drawBall() {
     ctx.beginPath();
     ctx.arc(x,y,ballRadius,0, Math.PI*2);
@@ -34,21 +66,51 @@
     ctx.closePath();
   }
 
+  function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+  }
+
+
   function draw() {
     // clearing canvas before drawing on it
     ctx.clearRect(0,0, canvas.width, canvas.height); // four coordinates: top left and bottom right coordinates of the rectangle
     // calling the drawBall function inside the drawing function
     drawBall();
+    drawPaddle();
     // updating the position each time the ball is drawn
-    if(y+dy < ballRadius || y+dy>canvas.height - ballRadius){
+    if(y+dy < ballRadius){
       dy = -dy;
+    } // in case the ball touches the lower edge of the canvas: GAME OVER
+    else if (y + dy > canvas.height - ballRadius){
+      if(x > paddleX && x < paddleX + paddleWidth) { // if the ball is inside the width of the paddle
+        dy = -dy; // move up again
+      }
+      else {
+        alert("GAME OVER")
+        document.location.reload();
+      }
+
     }
     if(x+dx > canvas.width - ballRadius || x + dx < ballRadius){
       dx = -dx;
     }
+    // update paddleX position according to button touches
+    if(rightPressed && paddleX < canvas.width-paddleWidth) {
+        paddleX += 7;
+    }
+    else if(leftPressed && paddleX > 0) {
+        paddleX -= 7;
+    }
+
+
     x += dx;
     y += dy;
   }
+
   // set Interval will call the draw function every 10 milliseconds
   setInterval(draw,10);
 
