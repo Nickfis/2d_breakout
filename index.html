@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>2D Breakout Game</title>
+    <title>2D Breakout Games</title>
     <style>
     	* { padding: 0; margin: 0; }
     	canvas { background: #eee; display: block; margin: 0 auto; }
@@ -17,32 +17,41 @@
   var canvas = document.getElementById("myCanvas");
   // storing the 2d rendering context
   var ctx = canvas.getContext("2d");
+  // defining the position of the ball
+  var x = canvas.width/2;
+  var y = canvas.height-30;
+  // movement of the ball
+  var dx = 2;
+  var dy = -2;
+  // defining the size of the ball
+  ballRadius = 10;
 
-  // put a red square on the canvas
-  // beginPath function can be used for drawing. Initializing the beginning
-  ctx.beginPath();
-  // first two coordinates are the distance from the rectangle to the upper left corner
-  // next two are for the size of the rectangle. here a square with 50x50px
-  ctx.rect(20,40,50,50);
-  ctx.fillStyle = '#FF0000';
-  ctx.fill();
-  ctx.closePath();
+  function drawBall() {
+    ctx.beginPath();
+    ctx.arc(x,y,ballRadius,0, Math.PI*2);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+  }
 
-  // creating a circle
-  ctx.beginPath();
-  // for circles: x, y coordinates of the central point of the arc
-  // then the radius(20), then start angle (0), end angle (in radians), direction of drawing)
-  ctx.arc(240, 160, 20, 0, Math.PI*2, false);
-  ctx.fillStyle="blue";
-  ctx.fill();
-  ctx.closePath();
+  function draw() {
+    // clearing canvas before drawing on it
+    ctx.clearRect(0,0, canvas.width, canvas.height); // four coordinates: top left and bottom right coordinates of the rectangle
+    // calling the drawBall function inside the drawing function
+    drawBall();
+    // updating the position each time the ball is drawn
+    if(y+dy < ballRadius || y+dy>canvas.height - ballRadius){
+      dy = -dy;
+    }
+    if(x+dx > canvas.width - ballRadius || x + dx < ballRadius){
+      dx = -dx;
+    }
+    x += dx;
+    y += dy;
+  }
+  // set Interval will call the draw function every 10 milliseconds
+  setInterval(draw,10);
 
-  // creating another rectangle
-  ctx.beginPath();
-  ctx.rect(160,10,100,40);
-  ctx.strokeStyle = "rgba(0,0,255,0.5)";
-  ctx.stroke();
-  ctx.closePath();
 
 </script>
 
