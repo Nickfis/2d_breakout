@@ -56,6 +56,9 @@
   // implementing score
   var score = 0;
 
+  // players lives (lifes?)
+  var lives = 3;
+
   // adding event listeners for button touches
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
@@ -128,10 +131,29 @@
           if(x>b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight){
             dy = -dy;
             b.status = 0;
+            score++;
+            if(score == brickRowCount*brickColumnCount) {
+              alert("YOU WIN!!!");
+              document.location.reload();
+            }
           }
         }
       }
     }
+  }
+
+  // score function
+  function drawScore() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Score: "+score, 8, 20);
+  }
+
+  // life function
+  function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Lives: "+lives,canvas.width-65, 20);
   }
 
   function draw() {
@@ -141,8 +163,13 @@
     drawBricks();
     drawBall();
     drawPaddle();
+    drawScore();
+    drawLives();
     collisionDetection();
-    // updating the position each time the ball is drawn
+
+    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+      dx = -dx;
+    }
     if(y+dy < ballRadius){
       dy = -dy;
     } // in case the ball touches the lower edge of the canvas: GAME OVER
@@ -151,13 +178,19 @@
         dy = -dy; // move up again
       }
       else {
-        alert("GAME OVER")
-        document.location.reload();
+        lives--;
+        if(!lives) {
+          alert("GAME OVER");
+          document.location.reload();
+        }
+        else {
+          x = canvas.width/2;
+          y = canvas.height-30;
+          dx = 2;
+          dy = -2;
+          paddleX = (canvas.width-paddleWidth)/2;
+        }
       }
-
-    }
-    if(x+dx > canvas.width - ballRadius || x + dx < ballRadius){
-      dx = -dx;
     }
     // update paddleX position according to button touches
     if(rightPressed && paddleX < canvas.width-paddleWidth) {
@@ -169,10 +202,15 @@
 
     x += dx;
     y += dy;
+    // let the function call itself over and over again
+    //requestAnimationFrame(draw);
   }
 
   // set Interval will call the draw function every 10 milliseconds
   setInterval(draw,10);
+  // doing it using the request animation frame function
+  //draw();
+
 
 
 </script>
